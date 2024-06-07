@@ -224,7 +224,8 @@ import { getNotes, createNote } from './requests'
 const App = () => {
   const queryClient = useQueryClient() // highlight-line
 
-  const newNoteMutation = useMutation(createNote, {
+  const newNoteMutation = useMutation({
+    mutationFn: createNote,
     onSuccess: () => {  // highlight-line
       queryClient.invalidateQueries({ queryKey: ['notes'] }) // highlight-line
     },
@@ -258,7 +259,8 @@ import { getNotes, createNote, updateNote } from './requests' // highlight-line
 const App = () => {
   // ...
 
-  const updateNoteMutation = useMutation(updateNote, {
+  const updateNoteMutation = useMutation({
+    mutationFn: updateNote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] })
     },
@@ -281,7 +283,8 @@ Sovelluksen tämän hetken koodi on [GitHubissa](https://github.com/fullstack-hy
 Sovellus toimii hyvin, ja koodikin on suhteellisen yksinkertaista. Erityisesti yllättää muistiinpanojen listan muutoksen toteuttamisen helppous. Esim. kun muutamme muistiinpanon tärkeyttä, riittää kyselyn <i>notes</i> invalidointi siihen, että sovelluksen data päivittyy:
 
 ```js
-  const updateNoteMutation = useMutation(updateNote, {
+  const updateNoteMutation = useMutation({
+    mutationFn: updateNote,
     onSuccess: () => {
       queryClient.invalidateQueries('notes') // highlight-line
     },
@@ -302,10 +305,11 @@ Muutos uuden muistiinpanon lisäävän mutaation osalta on seuraavassa:
 const App = () => {
   const queryClient =  useQueryClient() 
 
-  const newNoteMutation = useMutation(createNote, {
+  const newNoteMutation = useMutation({
+    mutationFn: createNote,
     onSuccess: (newNote) => {
-      const notes = queryClient.getQueryData('notes') // highlight-line
-      queryClient.setQueryData('notes', notes.concat(newNote)) // highlight-line
+      const notes = queryClient.getQueryData(['notes']) // highlight-line
+      queryClient.setQueryData(['notes'], notes.concat(newNote)) // highlight-line
     }
   })
   // ...
